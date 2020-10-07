@@ -1,0 +1,12 @@
+.post-container {
+    border: 1px solid;
+    border-radius: 10px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.likes {
+    
+    float: right;
+    padding-right: 15px;
+}
