@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Post
 
@@ -12,12 +13,28 @@ from .models import User, Post
 def index(request):
     return render(request, "network/index.html")
 
+# Show all posts
 @login_required
 def posts(request):
     posts = Post.objects.all()
     posts = posts.order_by("-timestamp")
-    print("Running")
     return JsonResponse([post.serialize() for post in posts], safe=False)
+
+# Make a new post 
+@csrf_exempt
+@login_required
+def post(request):
+
+    # Request must be POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    # Otherwise create new Post
+    data = json.loads(request.body)
+    data["user"] = request.user
+    new_post = Post(user=data["user"], text=data["text"])
+    new_post.save()
+    return JsonResponse({"Post": "Successful"}, status=200)
 
 
 def login_view(request):

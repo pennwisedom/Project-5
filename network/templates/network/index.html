@@ -2,10 +2,32 @@
 {% load static %}
 
 {% block body %}
-    
+
+    {% if user.is_authenticated %}
+    <div id=create-post>
+        <div id="success"> 
+            <h3>Successfully posted!</h3>
+        </div>
+        <form id="post-form">
+            <textarea id="post-text" form="post-form" rows="3" cols="50" placeholder="Make a post."></textarea><br>
+            <input type="submit" id="post-submit" value="Post!">
+        </form>
+    </div>
+    {% else %}
+    <div>
+        <h3>Please log in.</h3>
+    </div>
+    {% endif %}
+
+    <div id="success"> 
+        <h3>Successfully posted!</h3>
+    </div>
+
+    {% if user.is_authenticated %}
     <div id="all-posts">
         <h3>All Posts</h3>
     </div>
+    {% endif %}
 {% endblock %}
 
 {% block script %}
