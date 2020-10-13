@@ -1,0 +1,30 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+<div id="user-info">
+    <h3>User Info</h3>
+    <span class="follow" id="following"></span>
+    <span class="follow" id="followers"></span>
+</div>
+{% if request.user.id|stringformat:"s" != request.path|cut:'/'|cut:'user' %}
+<div id="follows">
+    <span><button data-follow="follow" id="followbutton" class="btn btn-outline-info">Follow</button></span>
+</div>
+{% endif %}
+
+<div class="hidden" id="watcher" data-foll="{{ request.user.id }}"></div>
+<div class="hidden" id="watchee" data-foll="{{ request.path|cut:'/'|cut:'user' }}"></div>
+
+<div id="all-posts">
+    <h3>User Posts</h3>
+</div>
+
+
+
+
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/network.js' %}"></script>
+{% endblock %}

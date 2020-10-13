@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, Post
+from .models import User, Post, WatchList
 
 
 def index(request):
@@ -19,6 +19,52 @@ def posts(request):
     posts = Post.objects.all()
     posts = posts.order_by("-timestamp")
     return JsonResponse([post.serialize() for post in posts], safe=False)
+
+# Display a Users Profile page
+@login_required
+def userpage(request, id):
+    return render(request, "network/userpage.html")
+
+# JSON Request for User Profile Page
+@login_required
+def userposts(request, id):
+    posts = Post.objects.filter(user=id)
+    posts = posts.order_by("-timestamp")
+    # Check if a user is following another already
+    if WatchList.objects.filter(userwatcher=request.user.id, userwatchee=id):
+        yes = 1
+    else:
+        yes = 0
+    return JsonResponse([post.serialize(yes) for post in posts], safe=False)
+
+# Follow and Unfollow
+@csrf_exempt
+@login_required
+def follower(request):
+    data = json.loads(request.body)
+
+    if request.method == "POST":
+    #    follow = WatchList(userwatcher=data["userwatcher"], userwatchee=data["userwatchee"])
+        follow = WatchList()
+        follow.save()
+        follow.userwatcher.add(data["userwatcher"])
+        follow.userwatchee.add(data["userwatchee"])
+        return JsonResponse({"Following": "Successful"}, status=200)
+
+    if request.method == "DELETE":
+        unfollow = WatchList.objects.get(userwatcher=data["userwatcher"], userwatchee=data["userwatchee"])
+        unfollow.delete()
+        return JsonResponse({"DELETED": "DELETED"}, status=200)
+
+
+
+
+
+# Add to likes
+@csrf_exempt
+@login_required
+def like(request):
+    pass
 
 # Make a new post 
 @csrf_exempt

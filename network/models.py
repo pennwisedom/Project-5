@@ -13,13 +13,18 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.user} made a post at {self.timestamp}."
 
-    def serialize(self):
+
+    def serialize(self, yes=0):
         return {
             "id": self.id,
             "user": self.user.username,
+            "user_id": self.user.id,
+            "user_is_following": yes,
             "text": self.text,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
-            "likes": Likes.objects.filter(post=self.pk).count()
+            "likes": Likes.objects.filter(post=self.pk).count(),
+            "followers": WatchList.objects.filter(userwatchee=self.user.id).count(),
+            "following": WatchList.objects.filter(userwatcher=self.user.id).count()
         }
 
 class Likes(models.Model):
