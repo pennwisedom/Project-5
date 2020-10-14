@@ -1,0 +1,19 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+        {% if user.is_authenticated %}
+    <div id="all-posts">
+        <h3 id="posts">Following</h3>
+    </div>
+    {% else %}
+    <div>
+        <h3>Please log in.</h3>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/network.js' %}"></script>
+{% endblock %}

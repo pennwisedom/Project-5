@@ -2,7 +2,7 @@
 {% load static %}
 {% block body %}
 <div id="user-info">
-    <h3>User Info</h3>
+    <h3>{{ profile.username | capfirst }}'s Page</h3>
     <span class="follow" id="following"></span>
     <span class="follow" id="followers"></span>
 </div>
@@ -12,8 +12,6 @@
 </div>
 {% endif %}
 
-<div class="hidden" id="watcher" data-foll="{{ request.user.id }}"></div>
-<div class="hidden" id="watchee" data-foll="{{ request.path|cut:'/'|cut:'user' }}"></div>
 
 <div id="all-posts">
     <h3>User Posts</h3>

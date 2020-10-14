@@ -23,7 +23,8 @@ def posts(request):
 # Display a Users Profile page
 @login_required
 def userpage(request, id):
-    return render(request, "network/userpage.html")
+    profile = User.objects.get(id=id)
+    return render(request, "network/userpage.html", {"profile": profile})
 
 # JSON Request for User Profile Page
 @login_required
@@ -44,7 +45,7 @@ def follower(request):
     data = json.loads(request.body)
 
     if request.method == "POST":
-    #    follow = WatchList(userwatcher=data["userwatcher"], userwatchee=data["userwatchee"])
+    
         follow = WatchList()
         follow.save()
         follow.userwatcher.add(data["userwatcher"])
@@ -56,8 +57,20 @@ def follower(request):
         unfollow.delete()
         return JsonResponse({"DELETED": "DELETED"}, status=200)
 
+# Followers Page
+@login_required
+def followers(request):
+    return render(request, "network/followers.html")
 
+# Query for Followers to Display
+def watching(request, ui):
+    people = WatchList.objects.filter(userwatcher=ui)
+    watchlist = []
+    for person in people:
+        watchlist.append(person.userwatchee.get().id)
 
+    watch = Post.objects.filter(user__in=watchlist)
+    return JsonResponse([watchs.serialize() for watchs in watch], safe=False)
 
 
 # Add to likes

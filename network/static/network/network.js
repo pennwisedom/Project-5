@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    
     if (document.querySelector("#post-form")) {
         document.querySelector("#post-form").addEventListener('submit', submit);
         document.querySelector("#post-form").addEventListener('submit', function(event){
@@ -10,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.querySelector("#post-form")) { 
         // Load all posts when page loads.
     all_posts();  
-    } else { 
+    } else if (document.querySelector('#follows')){ 
         user_posts();
     }
 
@@ -19,6 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const u1 = document.querySelector('#watcher').dataset.foll;
         const u2 = document.querySelector('#watchee').dataset.foll;
         document.querySelector('#followbutton').addEventListener('click', () => follow(u1, u2));
+    }
+
+    if (window.location.pathname === "/followers") {
+        followers();
     }
 });
 
@@ -117,6 +122,23 @@ function user_posts() {
 
 }
 
+// Load Followers Page
+function followers() {
+    document.querySelector
+    const user_id = document.querySelector('#watcher').dataset.foll;
+    fetch(`/watching/${user_id}`)
+    .then(response => response.json())
+    .then(posts => {
+
+        // Make a list of the posts 
+         generateposts(posts);
+ 
+         // Add event listeners for Like buttons
+         likelisten();
+ 
+    });
+}
+
 
 // Function for like button and amount
 function likelisten() {
@@ -173,6 +195,23 @@ function generateposts(posts) {
          elementlikes.setAttribute("data-num", `${index}`);
          elementlikes.setAttribute("id",`like${index}`);
          document.querySelector(`#timestamp${index}`).append(elementlikes);
+
+         // Edit Button
+         const editbutton = document.createElement('input');
+         editbutton.setAttribute("type", "button");
+         editbutton.setAttribute("value", "Edit");
+         editbutton.setAttribute("id", `edit${index}`);
+         //editbutton.setAttribute("visibility", "hidden");
+         editbutton.setAttribute("class", `edit btn btn-outline-info`);
+         document.querySelector(`#text${index}`).append(editbutton);
+         document.querySelector(`#edit${index}`).style.visibility = 'display';
+         
+
+            // Only display for my own posts
+            if ( document.querySelector('#watcher').dataset.foll != posts[index].user_id) {
+                document.querySelector(`#edit${index}`).style.visibility = 'hidden';
+
+            };
 
          // Like button
          const likebutton = document.createElement('input');

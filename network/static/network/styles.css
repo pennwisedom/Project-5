@@ -37,6 +37,12 @@ a.userlink {
     margin-left: 10px;
 }
 
+.edit {
+    font-size: 12px;
+    padding: 2px;
+    margin-left: 5px;
+}
+
 .hidden {
     display: none;
 }
