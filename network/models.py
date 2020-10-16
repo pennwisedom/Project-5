@@ -14,7 +14,7 @@ class Post(models.Model):
         return f"{self.user} made a post at {self.timestamp}."
 
 
-    def serialize(self, yes=0):
+    def serialize(self, yes=0, user=0):
         return {
             "id": self.id,
             "user": self.user.username,
@@ -23,6 +23,7 @@ class Post(models.Model):
             "text": self.text,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
             "likes": Likes.objects.filter(post=self.pk).count(),
+            "user_has_liked": 'yes' if Likes.objects.filter(post=self.id, user=user).count() > 0 else 'no',
             "followers": WatchList.objects.filter(userwatchee=self.user.id).count(),
             "following": WatchList.objects.filter(userwatcher=self.user.id).count()
         }

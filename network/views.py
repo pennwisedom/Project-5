@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, Post, WatchList
+from .models import User, Post, WatchList, Likes
 
 
 def index(request):
@@ -18,7 +18,7 @@ def index(request):
 def posts(request):
     posts = Post.objects.all()
     posts = posts.order_by("-timestamp")
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+    return JsonResponse([post.serialize(user=request.user.id) for post in posts], safe=False)
 
 # Display a Users Profile page
 @login_required
@@ -76,8 +76,20 @@ def watching(request, ui):
 # Add to likes
 @csrf_exempt
 @login_required
-def like(request):
-    pass
+def like(request, postid):
+    if request.method == "POST":
+        like = Likes(post=Post.objects.get(pk=postid))
+        like.save()
+        like.user.add(request.user)
+        print(like)
+        return JsonResponse({"Like": "Updated Successfully"}, status=201)
+    elif request.method == "DELETE":
+        unlike = Likes.objects.get(post=postid, user=request.user)
+        unlike.delete()
+        return JsonResponse({"Unike": "Updated Successfully"}, status=201)
+    else:
+        return JsonResponse({"error": "GET requests disallowed"}, status=400)
+
 
 # Make a new post 
 @csrf_exempt
@@ -94,6 +106,25 @@ def post(request):
     new_post = Post(user=data["user"], text=data["text"])
     new_post.save()
     return JsonResponse({"Post": "Successful"}, status=200)
+
+ # Update Post   
+
+@csrf_exempt
+@login_required
+def edit(request, postid):
+
+    if request.method == "POST":        
+        update = Post.objects.get(pk=postid)
+        # Check if user is the post creator
+        if (request.user == update.user):
+            response = json.loads(request.body)
+            newpost = response["text"]
+            update.text = newpost
+            update.save()
+            return JsonResponse({"Post": "Updated Succesfully"}, status=201)
+        else:
+            return JsonResponse({"Error": "Post can only be updated by post creator."}, status=500)
+    
 
 
 def login_view(request):

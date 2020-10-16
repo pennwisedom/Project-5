@@ -43,6 +43,19 @@ a.userlink {
     margin-left: 5px;
 }
 
+.save { 
+    margin-top: 2px;
+    font-size: 12px;
+    padding: 2px;
+    margin-left: 5px;
+}
+
+.tarea {
+    margin-top: 2px;
+    margin-left: 2px;
+    width: 20em;
+}
+
 .hidden {
     display: none;
 }
